@@ -1,0 +1,182 @@
+package main
+
+import "C"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/golang/protobuf/proto"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+	"google.golang.org/protobuf/encoding/protojson"
+	pda "pda-enqueue-registration-documents/generated"
+)
+
+type DocumentsWrapper struct {
+	Documents []interface{} `json:"documents,omitempty"`
+}
+
+func main() {
+	r := gin.Default()
+	r.POST("/api/balance", enqueueBalance)
+	r.POST("/api/documents", enqueueDocuments)
+
+	port := os.Getenv("LISTEN_PORT")
+	if port == "" {
+		port = "9119"
+	}
+
+	r.Run(":" + port)
+}
+
+
+func enqueueBalance(c *gin.Context) {
+
+	balanceExpected := &pda.Balance{
+		Currency: 1,
+		NodeId: 2,
+		UserId: 3,
+		Amount: 3.03,
+		IsActive: true,
+	}
+	//document := &pda.Document{
+	//	Body:
+	//}
+	//isDocumentBody =
+	//document. = document
+
+	newBalance0 := &pda.Balance{}
+	bodyRead0, err := ioutil.ReadAll(c.Request.Body)
+	err = protojson.Unmarshal(bodyRead0, newBalance0)
+
+	if err != nil {
+		log.Printf("Protojsob unmarshal error: %v", err)
+	}
+
+	log.Printf("Protojson unmarshalled json: %v", newBalance0.String())
+
+	balanceExpectedMarshalled, err := proto.Marshal(balanceExpected)
+	if err != nil {
+		log.Fatal("Balance expected marshaling error: ", err)
+	}
+	log.Printf("Balance expected marshalled: %v", balanceExpectedMarshalled)
+	balanceExpectedMarshalledText := proto.MarshalTextString(balanceExpected)
+	log.Printf("Balance expected marshalled text: %v", balanceExpectedMarshalledText)
+
+	newBalance := &pda.Balance{}
+	newBalance2 := &pda.Balance{}
+	err = proto.UnmarshalText(balanceExpectedMarshalledText, newBalance2)
+	if err != nil {
+		log.Fatal("Balance expected unmarshalling error: ", err)
+	}
+	log.Printf("Balance expected unmrshalled text string: %v", newBalance.String())
+
+	err = proto.Unmarshal(balanceExpectedMarshalled, newBalance)
+	if err != nil {
+		log.Fatal("Balance expected unmarshalling error: ", err)
+	}
+
+	log.Printf("Balance expected unmrshalled string: %v", newBalance.String())
+	log.Println("------------------------------------")
+
+	bodyRead, err := ioutil.ReadAll(c.Request.Body)
+	//log.Println(body)
+	if err != nil {
+		log.Printf("Error reading body: %v", err)
+		return
+	}
+	bodyString := string(bodyRead)
+	log.Printf("Body string: %v", bodyString)
+	log.Print(proto.DecodeVarint(bodyRead))
+	log.Printf("Body raw: %v", c.Request.Body)
+	log.Printf("Body readed: %v", bodyRead)
+	log.Println("------------------------------------")
+
+	var rBalance pda.Balance
+
+	err = c.ShouldBindWith(&rBalance, binding.ProtoBuf)
+	if err != nil {
+		log.Printf("Error bind balance: %v", err)
+	}
+
+	if c.ShouldBind(&rBalance) == nil {
+		log.Println(rBalance.Amount)
+		log.Println(rBalance.UserId)
+		log.Println(rBalance.NodeId)
+		log.Println(rBalance.Currency)
+		log.Println(rBalance.IsActive)
+	}
+
+	log.Println("b2------------------------------------")
+	var b2 pda.Balance
+	err = proto.Unmarshal(bodyRead, &b2)
+	if err != nil {
+		log.Printf("Error proto.Unmarshal(bodyReaded, &b2): %v", err)
+	}
+	log.Printf("Unmarshall balance string jsob: %v", b2.Amount)
+
+	//log.Printf("Received balance: %v", rBalance)
+
+	c.JSON(http.StatusOK, "success")
+}
+
+func enqueueDocuments(c *gin.Context) {
+	balanceExpected := &pda.Balance{
+		Currency: 1,
+		NodeId: 2,
+		UserId: 3,
+		Amount: 3.03,
+		IsActive: true,
+	}
+	//document := &pda.Document{
+	//	Body:
+	//}
+	//isDocumentBody =
+	//document. = document
+
+	balanceExpectedMarshalled, err := proto.Marshal(balanceExpected)
+	if err != nil {
+		log.Fatal("Balance expected marshaling error: ", err)
+	}
+
+	log.Printf("Balance expected marshalled: %v", balanceExpectedMarshalled)
+
+	newBalance := &pda.Balance{}
+	err = proto.Unmarshal(balanceExpectedMarshalled, newBalance)
+	if err != nil {
+		log.Fatal("Balance expected unmarshalling error: ", err)
+	}
+
+	log.Printf("Balance expected unmrshalled string: %v", newBalance.String())
+	log.Println("------------------------------------")
+
+	body, err := ioutil.ReadAll(c.Request.Body)
+	//log.Println(body)
+	if err != nil {
+		log.Printf("Error reading body: %v", err)
+		return
+	}
+	bodyString := string(body)
+	log.Printf("Body string: %v", bodyString)
+	log.Printf("Body raw: %v", c.Request.Body)
+	log.Printf("Body readed: %v", body)
+
+
+	balance := &pda.Balance{}
+	err = proto.Unmarshal(body, balance)
+	if err != nil {
+		log.Printf("Error unmarshal balance from readed body: %v", err)
+	}
+
+	log.Printf("Balance unmarshalled string: %v", balance.String())
+	c.JSON(http.StatusOK, balance.String())
+
+	//documents := &pda.Documents{}
+	//err = proto.Unmarshal(body, documents)
+	//if err != nil {
+	//	log.Printf("Error unmarshal documents from readed body: %v", err)
+	//}
+	//log.Printf("Documents unmarshalled string: %v", documents.String())
+	//c.JSON(http.StatusOK, documents.String())
+}

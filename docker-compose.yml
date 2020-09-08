@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  perd-app:
+    build:
+      network: host
+      context: ./
+      dockerfile: docker/Dockerfile
+    image: perd-backend
+    stdin_open: true
+    tty: true
+    ports:
+      - 9119:${LISTEN_PORT}
+    environment:
+      APP_ENV: ${APP_ENV}
+      LISTEN_PORT: ${LISTEN_PORT}
+    volumes:
+      - ./:/go/src/pda-enqueue-registration-documents

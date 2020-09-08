@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package PdaApi;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = ".;pda";
+
+message Documents {
+  repeated Document documents = 1;
+}
+
+message Document {
+  string id = 1;
+  oneof body {
+    Personal personal = 2;
+    Financial financial = 3;
+    Bet bet = 4;
+    Balance balance = 5;
+  }
+}
+
+
+message Bet {
+  int32 userId = 1;
+  int32 nodeId = 2;
+  float amount = 3;
+  int32 currency = 4;
+  enum OPERATION {
+    BET = 0;
+  }
+  OPERATION operation = 5;
+  google.protobuf.Timestamp date = 6;
+  int32 spins = 7;
+}
+
+
+message Financial {
+  int32 userId = 1;
+  int32 nodeId = 2;
+  float amount = 3;
+  int32 currency = 4;
+  enum OPERATION {
+    WIN = 0;
+    DEPOSIT = 1;
+    TRANSACTION = 2;
+  }
+  OPERATION operation = 5;
+  google.protobuf.Timestamp date = 6;
+}
+
+message Balance {
+  int32 currency = 1;
+  int32 userId = 2;
+  int32 nodeId = 3;
+  float amount = 4;
+  bool isActive = 5;
+}
+
+message Personal {
+  int32 userId = 1;
+  int32 nodeId = 2;
+  int32 gender = 3;
+  bool isVerified = 4;
+  int32 status = 5;
+  google.protobuf.Timestamp birthdate = 6;
+  int32 country = 7;
+  string city = 8;
+  string registrationIp = 9;
+  string lastLoginIp = 10;
+  repeated int32 socialNetwork = 11;
+  google.protobuf.Timestamp registeredAt = 16;
+  google.protobuf.Timestamp lastVisitAt = 17;
+  bool confirmationEmailStatus = 20;
+  bool confirmationPhoneStatus = 21;
+  string defaultLanguage = 23;
+}

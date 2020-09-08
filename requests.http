@@ -1,0 +1,79 @@
+POST http://localhost:80/api/item
+Content-Type: application/x-www-form-urlencoded
+
+id=99&content=new-element
+
+###
+POST http://localhost:9119/api/documents
+Content-Type: application/json
+
+{
+  "Documents": [
+    {
+      "Id": "490",
+      "Balance": {
+        "UserId": 42,
+        "NodeId": 2,
+        "Amount": 1.01,
+        "Currency": 149,
+        "IsActive": true
+      }
+    },
+    {
+      "Id": "491",
+      "Balance": {
+        "UserId": 420,
+        "NodeId": 3,
+        "Amount": 7.21,
+        "Currency": 120,
+        "IsActive": true
+      }
+    }
+  ]
+}
+
+###
+
+POST http://localhost:9119/api/documents
+Content-Type: application/json
+
+{"documents":[
+  {"balance":{"currency":140,"userId":1,"nodeId":2,"amount":3.02999997,"isActive":true}},
+  {"balance":{"currency":122,"userId":2,"nodeId":3,"amount":4.02999997,"isActive":false}},
+  {"financial":{"currency":122,"userId":2,"nodeId":3,"amount":4.02999997,"date":"1970-01-01T00:02:03Z","operation":0}}
+]}
+
+###
+
+POST http://localhost:9119/api/documents
+Content-Type: application/x-protobuf
+
+0x0a102a0e088c01100118022585eb41402801
+
+###
+
+POST http://localhost:9119/api/balance
+Content-Type: application/x-protobuf
+
+Binary String: 0x0801100118022585eb41402801
+
+###
+
+POST http://localhost:9119/api/balance
+Content-Type: application/json
+
+{"currency":1,"userId":1,"nodeId":2,"amount":3.02999997,"isActive":true}
+
+###
+
+POST http://localhost:9119/api/balance
+Content-Type: application/x-protobuf
+
+0x0801100118022585eb41402801
+
+###
+
+GET http://localhost:9119/api/fintest
+Content-Type: application/json
+
+###
