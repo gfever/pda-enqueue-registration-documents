@@ -34,7 +34,6 @@ message Bet {
   int32 spins = 7;
 }
 
-
 message Financial {
   int32 userId = 1;
   int32 nodeId = 2;

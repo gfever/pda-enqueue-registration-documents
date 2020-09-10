@@ -57,7 +57,7 @@ Content-Type: application/x-protobuf
 
 Binary String: 0x0801100118022585eb41402801
 
-###
+###, я
 
 POST http://localhost:9119/api/balance
 Content-Type: application/json

@@ -88,3 +88,4 @@ fabric.properties
 
 .env
 vendor*
+.idea/vcs.xml

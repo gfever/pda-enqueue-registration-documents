@@ -4,6 +4,8 @@ FROM golang:1.15.1-buster
 ENV GOBIN /go/bin
 ENV GOROOT /usr/local/go
 
+RUN echo $GOPATH
+
 RUN apt-get update && apt-get install -y unzip
 
 ARG PROTOC_ZIP=protoc-3.9.1-linux-x86_64.zip
@@ -16,13 +18,19 @@ WORKDIR /tmp
 RUN go get -u google.golang.org/protobuf/cmd/protoc-gen-go && \
     go install google.golang.org/protobuf/cmd/protoc-gen-go
 
+#WORKDIR /go
+RUN go get -d github.com/envoyproxy/protoc-gen-validate
+#&& make build
+
 RUN mkdir /go/src/pda-enqueue-registration-documents
 COPY . /go/src/pda-enqueue-registration-documents
 WORKDIR /go/src/pda-enqueue-registration-documents
 
+RUN protoc -I=./proto --go_out=generated ./proto/documents.proto
+
 RUN go get -u github.com/gin-gonic/gin
 
-RUN go mod vendor
+#RUN go mod vendor
 RUN chmod 777 /go/src/pda-enqueue-registration-documents/run.sh
 
 ENTRYPOINT ["sh", "/go/src/pda-enqueue-registration-documents/run.sh"]
